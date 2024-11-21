@@ -20,10 +20,9 @@ var job = CoreWebJob.Create("appsettings.json", true)
     {
         services.AddSingleton<IMailSender,MailSender>();
 
-        services.AddHostedService<TestService>(); // this inherites from BaseBackgroundService
+        services.AddHostedService<TestService>(); // this inherites from BaseHostedService OR BaseBackgroundService
     })
-    .WithFileLogger("Logs")
-    .UseConsoleLifetime();
+    .WithFileLogger("Logs");
 
 await job.RunAsync((sender, args) =>
 {

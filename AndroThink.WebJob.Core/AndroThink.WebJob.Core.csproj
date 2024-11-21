@@ -6,7 +6,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>AndroThink.WebJob.Core</PackageId>
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 		<Authors>Eslam Mohamed</Authors>
 		<Company>AndroThink</Company>
 		<PackageTags>Webjob;Core;Dotnet-core;core-6.0</PackageTags>

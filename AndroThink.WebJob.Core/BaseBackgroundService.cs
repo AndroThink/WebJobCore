@@ -5,29 +5,49 @@ namespace AndroThink.WebJob.Core;
 
 public abstract class BaseBackgroundService : BackgroundService
 {
-    private readonly ILogger<BaseBackgroundService> _logger;
+    protected readonly ILogger<BaseBackgroundService> Logger;
 
     public BaseBackgroundService(ILogger<BaseBackgroundService> logger)
     {
-        _logger = logger;
+        Logger = logger;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stoppingToken"></param>
+    /// <returns></returns>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            Logger.LogInformation($"Worker running at: {DateTimeOffset.Now.ToString("yyyy-MM-dd hh:mm:ss tt")}");
             await ProcessServiceTaskAsync(stoppingToken);
+            Logger.LogInformation($"Worker finished at: {DateTimeOffset.Now.ToString("yyyy-MM-dd hh:mm:ss tt")}");
+
+            await StopAsync(stoppingToken);
         }
 
-        _logger.LogInformation("Worker stopping...");
+        Logger.LogInformation($"Worker cancelled at: {DateTimeOffset.Now.ToString("yyyy-MM-dd hh:mm:ss tt")}");
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stoppingToken"></param>
+    /// <returns></returns>
     protected abstract Task ProcessServiceTaskAsync(CancellationToken stoppingToken);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Worker stopping gracefully...");
+        Logger.LogInformation("Worker stopping gracefully...");
         await base.StopAsync(cancellationToken);
+
+        Environment.Exit(0);
     }
 }

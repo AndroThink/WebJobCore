@@ -5,39 +5,47 @@ namespace AndroThink.WebJob.Core;
 
 public abstract class BaseHostedService : IHostedService
 {
-    private Task? _executingTask;
-    private readonly ILogger<BaseHostedService> _logger;
-    private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
+    protected readonly ILogger<BaseHostedService> Logger;
 
     public BaseHostedService(ILogger<BaseHostedService> logger)
     {
-        _logger = logger;
+        Logger = logger;
     }
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Job started.");
-        _executingTask = ExecuteAsync(_stoppingCts.Token);
-        return _executingTask.IsCompleted ? _executingTask : Task.CompletedTask;
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            Logger.LogInformation($"Job running at: {DateTimeOffset.Now.ToString("yyyy-MM-dd hh:mm:ss tt")}");
+            await ProcessServiceTaskAsync(cancellationToken);
+            Logger.LogInformation($"Job finished at: {DateTimeOffset.Now.ToString("yyyy-MM-dd hh:mm:ss tt")}");
+
+            await StopAsync(cancellationToken);
+        }
+
+        Logger.LogInformation($"Job cancelled at: {DateTimeOffset.Now.ToString("yyyy-MM-dd hh:mm:ss tt")}");
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stoppingToken"></param>
+    /// <returns></returns>
+    protected abstract Task ProcessServiceTaskAsync(CancellationToken stoppingToken);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("MyHostedService stopping.");
-        if (_executingTask == null) return;
-
-        _stoppingCts.Cancel();
-
-        await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite, cancellationToken));
+        Logger.LogInformation("Job stopping gracefully...");
+        Environment.Exit(0);
     }
-
-    protected virtual async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            await ProcessServiceTaskAsync(stoppingToken);
-        }
-    }
-
-    protected abstract Task ProcessServiceTaskAsync(CancellationToken stoppingToken);
 }
