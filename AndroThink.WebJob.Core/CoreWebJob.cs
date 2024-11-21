@@ -141,7 +141,7 @@ public class CoreWebJob
                 currentDomain.UnhandledException += unhandledExceptionEventHandler;
             }
 
-            await builder.RunConsoleAsync(cancellationToken);
+            await builder.Build().RunAsync(cancellationToken);
         }
         else
         {
