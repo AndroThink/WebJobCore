@@ -1,43 +1,33 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace AndroThink.WebJob.Core;
 
-public abstract class BaseBackgroundService : IHostedService
+public abstract class BaseBackgroundService : BackgroundService
 {
-    public BaseBackgroundService() { }
+    private readonly ILogger<BaseBackgroundService> _logger;
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public BaseBackgroundService(ILogger<BaseBackgroundService> logger)
     {
-        DoWork(cancellationToken).GetAwaiter().GetResult();
-        return Task.CompletedTask;
+        _logger = logger;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Console.WriteLine($"ProcessTasksService : stopping webjob .");
-        return Task.CompletedTask;
-    }
-
-    private async Task DoWork(CancellationToken stoppingToken)
-    {
-        try
+        while (!stoppingToken.IsCancellationRequested)
         {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await ProcessTasksServiceAsync(stoppingToken);
-                Environment.Exit(0);
-            }
+            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            await ProcessServiceTaskAsync(stoppingToken);
         }
-        catch (Exception ex)
-        {
-            try
-            {
-                Console.WriteLine("Webjob Failed !" + ex.Message);
-            }
-            catch { }
-            Environment.Exit(1);
-        }
+
+        _logger.LogInformation("Worker stopping...");
     }
 
-    protected abstract Task ProcessTasksServiceAsync(CancellationToken stoppingToken);
+    protected abstract Task ProcessServiceTaskAsync(CancellationToken stoppingToken);
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Worker stopping gracefully...");
+        await base.StopAsync(cancellationToken);
+    }
 }
