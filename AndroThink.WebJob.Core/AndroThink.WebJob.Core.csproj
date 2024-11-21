@@ -6,13 +6,13 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>AndroThink.WebJob.Core</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Authors>Eslam Mohamed</Authors>
 		<Company>AndroThink</Company>
 		<PackageTags>Webjob;Core;Dotnet-core;core-6.0</PackageTags>
 		<Description>This package will help in dealing with the barcode readers in your wpf application</Description>
-		<PackageProjectUrl>https://github.com/AndroThink/WPFBarCode</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/AndroThink/WPFBarCode</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/AndroThink/WebJobCore</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/AndroThink/WebJobCore</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageIcon>andro_think.png</PackageIcon>
